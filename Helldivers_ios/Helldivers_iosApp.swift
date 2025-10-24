@@ -11,7 +11,8 @@ import SwiftUI
 struct Helldivers_iosApp: App {
     var body: some Scene {
         WindowGroup {
-            SplashScreenView()
+            RootView() 
         }
     }
 }
+

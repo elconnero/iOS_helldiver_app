@@ -5,39 +5,39 @@
 //  Created by csuftitan on 10/20/25.
 //
 
-import Foundation
 import SwiftUI
 
 struct SplashScreenView: View {
     @State private var isActive = false
-    @State private var size = 0.8
-    @State private var opacity = 0.5
-    
+    @State private var size: CGFloat = 0.8
+    @State private var opacity: Double = 0.5
+
+    let mainUserName: String
+
     var body: some View {
-        if isActive {
+        // Don’t auto-advance when running in Xcode previews
+        let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+
+        if isActive && !isPreview {
             ContentView()
         } else {
             VStack {
-                VStack {
-                    Image(systemName: "questionmark.circle")
-                        .font(.system(size: 80))
-                        .foregroundColor(.blue) // Placeholder, make sure to add B01 helmet or something like that.
-                    Text("Welcome, Helldiver!") //Figure out how to get someones name where Helldiver is.
-                    Text("HD2 Loadout Generator")
-                }
-                .scaleEffect(size)
-                .opacity(opacity)
-                .onAppear {
-                    withAnimation(.easeIn(duration: 1.2)) {
-                        self.size = 0.9
-                        self.opacity = 1.0
-                    }
-                }
+                Image(systemName: "questionmark.circle")
+                    .font(.system(size: 80))
+                    .foregroundColor(.blue)
+                Text("Welcome, \(mainUserName)!")
+                Text("HD2 Loadout Generator")
             }
+            .scaleEffect(size)
+            .opacity(opacity)
             .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                    withAnimation {
-                        self.isActive = true
+                withAnimation(.easeIn(duration: 1.2)) {
+                    size = 0.9
+                    opacity = 1.0
+                }
+                if !isPreview {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        withAnimation { isActive = true }
                     }
                 }
             }
@@ -45,8 +45,7 @@ struct SplashScreenView: View {
     }
 }
 
-struct SplashScreen_Previews: PreviewProvider {
-    static var previews: some View {
-        SplashScreenView()
-    }
+#Preview("Splash – Guest") {
+    SplashScreenView(mainUserName: "Guest")
 }
+
