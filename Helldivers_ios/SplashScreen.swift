@@ -12,7 +12,7 @@ struct SplashScreenView: View {
     @State private var size: CGFloat = 0.8
     @State private var opacity: Double = 0.5
 
-    let mainUserName: String
+    // let mainUserName: String
 
     var body: some View {
         // Don’t auto-advance when running in Xcode previews
@@ -25,7 +25,7 @@ struct SplashScreenView: View {
                 Image(systemName: "questionmark.circle")
                     .font(.system(size: 80))
                     .foregroundColor(.blue)
-                Text("Welcome, \(mainUserName)!")
+                // Text("Welcome, \(mainUserName)!")
                 Text("HD2 Loadout Generator")
             }
             .scaleEffect(size)
@@ -45,7 +45,10 @@ struct SplashScreenView: View {
     }
 }
 
-#Preview("Splash – Guest") {
-    SplashScreenView(mainUserName: "Guest")
-}
+//#Preview("Splash – Guest") {
+//    SplashScreenView(mainUserName: "Guest")
+//}
 
+#Preview("Splash") {
+    SplashScreenView()
+}

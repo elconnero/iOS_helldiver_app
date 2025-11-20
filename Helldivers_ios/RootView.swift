@@ -7,59 +7,35 @@
 
 import SwiftUI
 
-private enum Route { case splash, askUsername, mainMenu }
+enum AppRoute {
+    case splash
+    case mainTabs
+}
 
 struct RootView: View {
-    @AppStorage("mainUserName") private var mainUserName: String = "Helldiver"
-    @AppStorage("mainUserCreateName") private var mainUserCreateName: Bool = false
-    @State private var route: Route = .splash
+    @State private var route: AppRoute = .splash
 
     var body: some View {
         Group {
             switch route {
+
             case .splash:
-                SplashScreenView(mainUserName: mainUserName)
+                SplashScreenView()
                     .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            route = mainUserCreateName ? .mainMenu : .askUsername
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                            withAnimation {
+                                route = .mainTabs
+                            }
                         }
                     }
 
-            case .askUsername:
-                QueryWindowView { primaryUser in
-                    let trimmed = primaryUser.trimmingCharacters(in: .whitespacesAndNewlines)
-                    mainUserName = trimmed.isEmpty ? "Helldiver" : trimmed
-                    mainUserCreateName = true
-                    route = .mainMenu
-                }
-
-            case .mainMenu:
-                ContentView()
+            case .mainTabs:
+                MainTabView()
             }
         }
     }
 }
 
-
-
-private struct RootPreviewBootstrap: View {
-    init(username: String?, didOnboard: Bool?) {
-        let d = UserDefaults.standard
-        if let username { d.set(username, forKey: "mainUserName") }
-        else { d.removeObject(forKey: "mainUserName") }
-
-        if let didOnboard { d.set(didOnboard, forKey: "mainUserCreateName") }
-        else { d.removeObject(forKey: "mainUserCreateName") }
-    }
-    var body: some View { RootView() }
+#Preview {
+    RootView()
 }
-
-#Preview("First launch → asks name") {
-    RootPreviewBootstrap(username: "Helldiver", didOnboard: false)
-}
-
-#Preview("Returning user (Bob) → main") {
-    RootPreviewBootstrap(username: "Bob", didOnboard: true)
-}
-
-
