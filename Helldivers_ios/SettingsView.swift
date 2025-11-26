@@ -49,7 +49,7 @@ struct SettingsView: View {
                         }
                         .foregroundColor(.black)
                         .frame(width: 140, height: 48)
-                        .background(Color.yellow)
+                        .background(Color.helldiverYellow)
                         .cornerRadius(16)
                     }
                     .frame(maxWidth: .infinity, alignment: .center)

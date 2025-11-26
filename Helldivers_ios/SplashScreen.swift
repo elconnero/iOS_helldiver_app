@@ -8,47 +8,39 @@
 import SwiftUI
 
 struct SplashScreenView: View {
-    @State private var isActive = false
-    @State private var size: CGFloat = 0.8
-    @State private var opacity: Double = 0.5
-
-    // let mainUserName: String
-
     var body: some View {
-        // Don’t auto-advance when running in Xcode previews
-        let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+        ZStack {
+            // Background
+            Color.black
+                .ignoresSafeArea()
 
-        if isActive && !isPreview {
-            ContentView()
-        } else {
-            VStack {
-                Image(systemName: "questionmark.circle")
-                    .font(.system(size: 80))
-                    .foregroundColor(.blue)
-                // Text("Welcome, \(mainUserName)!")
-                Text("HD2 Loadout Generator")
+            VStack(spacing: 24) {
+                Spacer()
+
+                Image("Helldiver Welcome")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 379, height: 379)
+
+                // Title
+                Text("WELCOME HELLDIVER")
+                    .font(.custom("ChakraPetch-Bold", size: 32))
+                    .kerning(2)
+                    .foregroundColor(.white)
+
+                Spacer()
+
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .helldiverYellow))
+                    .scaleEffect(1.2)
+                    .padding(.bottom, 60)
             }
-            .scaleEffect(size)
-            .opacity(opacity)
-            .onAppear {
-                withAnimation(.easeIn(duration: 1.2)) {
-                    size = 0.9
-                    opacity = 1.0
-                }
-                if !isPreview {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                        withAnimation { isActive = true }
-                    }
-                }
-            }
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 32)
         }
     }
 }
 
-//#Preview("Splash – Guest") {
-//    SplashScreenView(mainUserName: "Guest")
-//}
-
-#Preview("Splash") {
+#Preview {
     SplashScreenView()
 }
