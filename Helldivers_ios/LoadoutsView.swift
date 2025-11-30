@@ -6,111 +6,105 @@
 
 import SwiftUI
 
-struct Loadout: Identifiable {
-    let id = UUID()
-    let name: String
-    let playerCount: Int
-    let type: String
-}
-
 struct LoadoutsView: View {
-    @State private var loadouts: [Loadout] = [
-        Loadout(name: "Loadout 6", playerCount: 4, type: "Crowd Control"),
-        Loadout(name: "Loadout 5", playerCount: 4, type: "Crowd Control"),
-        Loadout(name: "Loadout 4", playerCount: 4, type: "Crowd Control"),
-        Loadout(name: "Loadout 3", playerCount: 4, type: "Crowd Control"),
-        Loadout(name: "Loadout 2", playerCount: 4, type: "Crowd Control"),
-        Loadout(name: "Loadout 1", playerCount: 4, type: "Crowd Control")
-    ]
+    @State private var loadouts: [SquadLoadout] = MockLoadouts.sample
 
     var body: some View {
-        ZStack(alignment: .top) {
-            Color.black
-                .ignoresSafeArea()
+        NavigationStack {
+            ZStack {
+                Color.black.ignoresSafeArea()
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
 
-                    Text("Loadouts")
-                        .font(.custom("ChakraPetch-Bold", size: 34))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.top, 24)
-                        .padding(.bottom, 4)
+                        // Title
+                        Text("Loadouts")
+                            .font(.custom("ChakraPetch-Bold", size: 34))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.top, 24)
 
-                    ForEach(loadouts) { loadout in
-                        LoadoutRow(loadout: loadout) {
-                            if let index = loadouts.firstIndex(where: { $0.id == loadout.id }) {
-                                loadouts.remove(at: index)
-                            }
+                        // Cards
+                        ForEach(loadouts) { loadout in
+                            loadoutCard(loadout)
                         }
-                    }
 
-                    Spacer(minLength: 24)
+                        Spacer(minLength: 24)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 16)
                 }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 40)
             }
-            .background(Color.clear)
+            .navigationBarBackButtonHidden(true)
         }
     }
-}
 
-struct LoadoutRow: View {
-    let loadout: Loadout
-    let onDelete: () -> Void
-
-    var body: some View {
+    @ViewBuilder
+    private func loadoutCard(_ loadout: SquadLoadout) -> some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 18)
-                .fill(Color.white.opacity(0.08))
+            RoundedRectangle(cornerRadius: 24)
+                .fill(Color.white.opacity(0.06))
 
             VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Text(loadout.name)
+                        .font(.system(size: 20, weight: .semibold))
                         .foregroundColor(.white)
-                        .font(.system(size: 18, weight: .semibold))
 
                     Spacer()
 
-                    Button(action: onDelete) {
+                    // X button
+                    Button {
+                        deleteLoadout(loadout)
+                    } label: {
                         Image(systemName: "xmark")
-                            .font(.system(size: 14, weight: .bold))
                             .foregroundColor(.white.opacity(0.7))
+                            .font(.system(size: 16, weight: .bold))
                     }
+                    .buttonStyle(.plain)
                 }
 
-                Text("\(loadout.playerCount) Players | Type: \(loadout.type)")
+                Text("\(loadout.playerCount) Players | Type: \(loadout.type.rawValue)")
                     .foregroundColor(.white.opacity(0.7))
                     .font(.system(size: 14))
 
                 HStack {
-                    Button {
-                        // Need to hook this up to view loadout screen
+                    NavigationLink {
+                        SquadDetailView(squad: loadout)
                     } label: {
                         Text("View")
                             .font(.system(size: 16, weight: .semibold))
                             .foregroundColor(.black)
-                            .padding(.horizontal, 28)
-                            .padding(.vertical, 10)
+                            .frame(width: 96, height: 44)
                             .background(Color.helldiverYellow)
-                            .clipShape(Capsule())
+                            .cornerRadius(22)
                     }
+                    .buttonStyle(.plain)
 
                     Spacer()
 
-                    // Placeholder squares where the icons will go later
+                    // Placeholder squares where the small icons will go
                     HStack(spacing: 8) {
-                        ForEach(0..<5) { _ in
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(Color.white.opacity(0.16))
-                                .frame(width: 28, height: 28)
+                        ForEach(0..<5, id: \.self) { _ in
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.white.opacity(0.10))
+                                .frame(width: 32, height: 32)
                         }
                     }
                 }
+                .padding(.top, 8)
             }
             .padding(16)
         }
         .frame(maxWidth: .infinity)
+        .frame(height: 140)
+    }
+
+    // delete helper
+
+    private func deleteLoadout(_ loadout: SquadLoadout) {
+        if let index = loadouts.firstIndex(where: { $0.id == loadout.id }) {
+            loadouts.remove(at: index)
+        }
     }
 }

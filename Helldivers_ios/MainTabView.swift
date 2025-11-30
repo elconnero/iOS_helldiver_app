@@ -38,12 +38,15 @@ struct MainTabView: View {
 
     var body: some View {
         TabView {
-            LoadoutsView()
-                .tabItem {
-                    Image(systemName: "list.bullet")
-                    Text("Loadouts")
-                }
+            NavigationStack {
+                LoadoutsView()
+            }
+            .tabItem {
+                Image(systemName: "list.bullet")
+                Text("Loadouts")
+            }
 
+        
             NewLoadoutView()
                 .tabItem {
                     Image(systemName: "plus.circle")
