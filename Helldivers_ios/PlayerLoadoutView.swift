@@ -15,6 +15,7 @@ struct PlayerLoadoutView: View {
         GeometryReader { geo in
             let totalHeight = geo.size.height
             let largeCardHeight = totalHeight * 0.22
+            let mediumCardHeight = totalHeight * 0.14
             let smallCardHeight = totalHeight * 0.10
             let verticalSpacing: CGFloat = 12
 
@@ -40,9 +41,9 @@ struct PlayerLoadoutView: View {
                     // Secondary + Throwable
                     HStack(spacing: 16) {
                         equipmentCard(item: player.secondary,
-                                      height: smallCardHeight)
+                                      height: mediumCardHeight)
                         equipmentCard(item: player.throwable,
-                                      height: smallCardHeight)
+                                      height: mediumCardHeight)
                     }
 
                     // Bottom grid
@@ -81,16 +82,30 @@ struct PlayerLoadoutView: View {
     ) -> some View {
         VStack(spacing: 8) {
             ZStack {
-                RoundedRectangle(cornerRadius: 18)
-                    .fill(Color.white.opacity(0.06))
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color(red: 38.0/255.0, green: 38.0/255.0, blue: 38.0/255.0), // #262626
+                                Color(red: 20.0/255.0, green: 20.0/255.0, blue: 20.0/255.0)  // #141414
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
 
+
+                Text("") // dummy text to keep the closure syntactically happy if needed
+                    .onAppear {
+                        print("Image URL for \(item.name): \(item.imageURL)")
+                    }
                 AsyncImage(url: URL(string: item.imageURL)) { phase in
                     switch phase {
                     case .success(let image):
                         image
                             .resizable()
                             .scaledToFit()
-                            .padding(large ? 24 : 16)
+                            .padding(large ? 0 : 8)
 
                     case .failure(_):
                         Image(systemName: "exclamationmark.triangle")

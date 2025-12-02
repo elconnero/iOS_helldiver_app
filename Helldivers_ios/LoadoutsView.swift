@@ -2,40 +2,58 @@
 //  LoadoutsView.swift
 //  Helldivers_ios
 //
-//  Created by Alvaro Contreras on 11/19/25.
 
 import SwiftUI
 
 struct LoadoutsView: View {
-    @State private var loadouts: [SquadLoadout] = MockLoadouts.sample
+    @EnvironmentObject var viewModel: LoadoutsViewModel
 
     var body: some View {
         NavigationStack {
             ZStack {
                 Color.black.ignoresSafeArea()
-
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
-
-                        // Title
-                        Text("Loadouts")
-                            .font(.custom("ChakraPetch-Bold", size: 34))
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                            .padding(.top, 24)
-
-                        // Cards
-                        ForEach(loadouts) { loadout in
-                            loadoutCard(loadout)
-                        }
-
-                        Spacer(minLength: 24)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 16)
-                }
+                content
             }
             .navigationBarBackButtonHidden(true)
+            .task {
+                await viewModel.loadInitial()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if viewModel.isLoading && viewModel.loadouts.isEmpty {
+            ProgressView("Loading loadout...")
+                .tint(.white)
+        } else {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+
+                    // Title
+                    Text("Loadouts")
+                        .font(.custom("ChakraPetch-Bold", size: 34))
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 24)
+
+                    if let error = viewModel.errorMessage {
+                        Text(error)
+                            .foregroundColor(.red)
+                            .font(.system(size: 14))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 8)
+                    }
+
+                    ForEach(viewModel.loadouts) { loadout in
+                        loadoutCard(loadout)
+                    }
+
+                    Spacer(minLength: 24)
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 16)
+            }
         }
     }
 
@@ -53,9 +71,9 @@ struct LoadoutsView: View {
 
                     Spacer()
 
-                    // X button
                     Button {
-                        deleteLoadout(loadout)
+                        // ✅ Call the method on the environment object
+                        viewModel.delete(loadout)
                     } label: {
                         Image(systemName: "xmark")
                             .foregroundColor(.white.opacity(0.7))
@@ -83,7 +101,6 @@ struct LoadoutsView: View {
 
                     Spacer()
 
-                    // Placeholder squares where the small icons will go
                     HStack(spacing: 8) {
                         ForEach(0..<5, id: \.self) { _ in
                             RoundedRectangle(cornerRadius: 8)
@@ -99,12 +116,5 @@ struct LoadoutsView: View {
         .frame(maxWidth: .infinity)
         .frame(height: 140)
     }
-
-    // delete helper
-
-    private func deleteLoadout(_ loadout: SquadLoadout) {
-        if let index = loadouts.firstIndex(where: { $0.id == loadout.id }) {
-            loadouts.remove(at: index)
-        }
-    }
 }
+
