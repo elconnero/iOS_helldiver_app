@@ -1,10 +1,3 @@
-//
-//  MainTabView.swift
-//  Helldivers_ios
-//
-//  Created by Alvaro Contreras on 11/20/25.
-//
-
 import SwiftUI
 
 extension UIColor {
@@ -12,6 +5,8 @@ extension UIColor {
 }
 
 struct MainTabView: View {
+
+    @StateObject private var loadoutsViewModel = LoadoutsViewModel()
 
     init() {
         let appearance = UITabBarAppearance()
@@ -41,13 +36,14 @@ struct MainTabView: View {
             NavigationStack {
                 LoadoutsView()
             }
+            .environmentObject(loadoutsViewModel)
             .tabItem {
                 Image(systemName: "list.bullet")
                 Text("Loadouts")
             }
 
-        
             NewLoadoutView()
+                .environmentObject(loadoutsViewModel)
                 .tabItem {
                     Image(systemName: "plus.circle")
                     Text("New Loadout")
