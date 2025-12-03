@@ -2,7 +2,7 @@
 //  PlayerLoadoutView.swift
 //  Helldivers_ios
 //
-//  Created by Alvaro Contreras on 11/29/25.
+//  Created by Alvaro Contreras on 11/29/25 and edited by Ethan paransky on 12/3/25.
 //
 
 import SwiftUI
@@ -10,6 +10,22 @@ import SwiftUI
 struct PlayerLoadoutView: View {
     let player: PlayerLoadout
     @Environment(\.dismiss) private var dismiss
+    
+    //Load Stored player names
+    @AppStorage("player1Name") private var player1Name = "Player 1"
+    @AppStorage("player2Name") private var player2Name = "Player 2"
+    @AppStorage("player3Name") private var player3Name = "Player 3"
+    @AppStorage("player4Name") private var player4Name = "Player 4"
+    
+    private var displayName: String{
+        switch player.playerNumber{
+        case 1: return player1Name
+        case 2: return player2Name
+        case 3: return player3Name
+        case 4: return player4Name
+        default: return "Unknown Player"
+        }
+    }
 
     var body: some View {
         GeometryReader { geo in
@@ -25,7 +41,7 @@ struct PlayerLoadoutView: View {
                 VStack(spacing: verticalSpacing) {
 
                     // Title
-                    Text("Player \(player.playerNumber)")
+                    Text(displayName)
                         .font(.custom("ChakraPetch-Bold", size: 34))
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity, alignment: .center)
