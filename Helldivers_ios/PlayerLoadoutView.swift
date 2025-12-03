@@ -2,7 +2,7 @@
 //  PlayerLoadoutView.swift
 //  Helldivers_ios
 //
-//  Created by Alvaro Contreras on 11/29/25.
+//  Created by Alvaro Contreras on 11/29/25 and edited by Ethan paransky on 12/3/25.
 //
 
 import SwiftUI

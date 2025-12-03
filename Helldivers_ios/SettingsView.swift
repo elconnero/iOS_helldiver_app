@@ -2,7 +2,7 @@
 //  SettingsView.swift
 //  Helldivers_ios
 //
-//  Created by Alvaro Contreras on 11/19/25.
+//  Created by Alvaro Contreras on 11/19/25 and edited by Ethan Paransky 12/3/25.
 
 import SwiftUI
 
