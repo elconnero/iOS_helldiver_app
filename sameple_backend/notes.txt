@@ -1,0 +1,45 @@
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+python -m venv .venv
+deactivate
+
+JSON in: Example --
+{
+  "players": 4,
+  "warbonds": ["BASE", "STEELD_VETERANS", "ODST"],
+  "style": "crazy"
+}
+
+JSON out: Example:
+{
+  "players": [
+    {
+      "player_index": 1,
+      "loadout": {
+        "primary": "010101",
+        "secondary": "020104",
+        "throwable": "030104",
+        "stratagem_1": "040101",
+        "stratagem_2": "040102",
+        "stratagem_3": "040103",
+        "stratagem_4": "040104",
+        "armor_passive": "050101",
+        "booster": "060101"
+      }
+    },
+    {
+      "player_index": 2,
+      "loadout": {
+        "primary": "010108",
+        "secondary": "020203",
+        "throwable": "030205",
+        "stratagem_1": "040201",
+        "stratagem_2": "040202",
+        "stratagem_3": "040203",
+        "stratagem_4": "040204",
+        "armor_passive": "050102",
+        "booster": "060102"
+      }
+    }
+    // up to player_index = 4
+  ]
+}

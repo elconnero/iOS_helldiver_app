@@ -1,0 +1,48 @@
+
+Default:
+{
+  "players": 2,
+  "warbonds": [],
+  "style": "default"
+}
+
+Max Players:
+{
+  "players": 4,
+  "warbonds": ["STEELED_VETERANS", "ODST"],
+  "style": "spec_ops"
+}
+
+Explosive Bias:
+{
+  "players": 3,
+  "warbonds": [],
+  "style": "explosive"
+}
+
+Empty Warbond:
+{
+  "players": 4,
+  "warbonds": [],
+  "style": "default"
+}
+
+A lot of missing bonds:
+{
+  "players": 4,
+  "warbonds": [
+    "BASE",
+    "STEELD_VETERANS",
+    "ODST",
+    "DUST_DEVILS",
+    "URBAN_LEGENDS"
+  ],
+  "style": "default"
+}
+
+Bad request:
+{
+  "players": 2,
+  "warbonds": [],
+  "style": "crazy"
+}
