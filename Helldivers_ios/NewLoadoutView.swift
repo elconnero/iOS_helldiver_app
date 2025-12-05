@@ -4,20 +4,16 @@ extension Color {
     static let helldiverYellow = Color(red: 1.0, green: 231/255.0, blue: 16/255.0)
 }
 
-// Simple model to represent a warbond option in the UI.
 struct WarbondOption: Identifiable, Hashable {
-    /// This is the exact string sent to the backend (must match your Python enum).
     let id: String
-    /// Human-readable label shown in the UI.
     let label: String
 }
 
-// Full list of warbonds; IDs MUST match the backend expectations.
 private let allWarbonds: [WarbondOption] = [
     .init(id: "BASE",                  label: "Base"),
-    .init(id: "STEELD_VETERANS",       label: "Steeled Veterans"),
+    .init(id: "STEELED_VETERANS",       label: "Steeled Veterans"),
     .init(id: "HELLDIVERS_MOBILIZE",   label: "Helldivers Mobilize"),
-    .init(id: "KILLZONE_CROSSOVER",    label: "Helldivers x Killzone"),
+    .init(id: "KILLZONE_CROSSOVER",    label: "Helldivers x Killzone Crossover"),
     .init(id: "VIPER_COMMANDOS",       label: "Viper Commandos"),
     .init(id: "POLAR_PATRIOTS",        label: "Polar Patriots"),
     .init(id: "DEMOCRATIC_DETONATION", label: "Democratic Detonation"),
@@ -61,8 +57,6 @@ struct NewLoadoutView: View {
     @State private var selectedType: LoadoutType = .normal
     @State private var isSubmitting: Bool = false
     @State private var submitError: String?
-
-    // Warbonds the user DOESN'T own (to be excluded in the loadout).
     @State private var excludedWarbonds: Set<String> = []
 
     var body: some View {
@@ -142,7 +136,6 @@ struct NewLoadoutView: View {
                     .clipShape(Capsule())
                 }
 
-                // Warbonds you DON'T own (to exclude)
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Warbonds you DON'T own")
                         .foregroundColor(.white)
@@ -236,7 +229,6 @@ struct NewLoadoutView: View {
         isSubmitting = true
         submitError = nil
 
-        // Convert Set<String> to [String] for JSON.
         let warbondArray = Array(excludedWarbonds)
 
         await viewModel.generateLoadout(
