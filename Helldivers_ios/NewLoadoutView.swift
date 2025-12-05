@@ -4,6 +4,40 @@ extension Color {
     static let helldiverYellow = Color(red: 1.0, green: 231/255.0, blue: 16/255.0)
 }
 
+// Simple model to represent a warbond option in the UI.
+struct WarbondOption: Identifiable, Hashable {
+    /// This is the exact string sent to the backend (must match your Python enum).
+    let id: String
+    /// Human-readable label shown in the UI.
+    let label: String
+}
+
+// Full list of warbonds; IDs MUST match the backend expectations.
+private let allWarbonds: [WarbondOption] = [
+    .init(id: "BASE",                  label: "Base"),
+    .init(id: "STEELD_VETERANS",       label: "Steeled Veterans"),
+    .init(id: "HELLDIVERS_MOBILIZE",   label: "Helldivers Mobilize"),
+    .init(id: "KILLZONE_CROSSOVER",    label: "Helldivers x Killzone"),
+    .init(id: "VIPER_COMMANDOS",       label: "Viper Commandos"),
+    .init(id: "POLAR_PATRIOTS",        label: "Polar Patriots"),
+    .init(id: "DEMOCRATIC_DETONATION", label: "Democratic Detonation"),
+    .init(id: "FORCE_OF_LAW",          label: "Force of Law"),
+    .init(id: "MASTERS_OF_CEREMONY",   label: "Masters of Ceremony"),
+    .init(id: "FREEDOMS_FLAME",        label: "Freedom's Flame"),
+    .init(id: "ODST",                  label: "ODST"),
+    .init(id: "DUST_DEVILS",           label: "Dust Devils"),
+    .init(id: "CONTROL_GROUP",         label: "Control Group"),
+    .init(id: "BORDERLINE_JUSTICE",    label: "Borderline Justice"),
+    .init(id: "SOF",                   label: "Servants of Freedom"),
+    .init(id: "TRUTH_ENFORCERS",       label: "Truth Enforcers"),
+    .init(id: "URBAN_LEGENDS",         label: "Urban Legends"),
+    .init(id: "CUTTING_EDGE",          label: "Cutting Edge"),
+    .init(id: "SUPER_STORE",           label: "Super Store"),
+    .init(id: "SUPER_CITIZEN_EDITION", label: "Super Citizen Edition"),
+    .init(id: "SERVANTS_OF_FREEDOM",   label: "Servants of Freedom"),
+    .init(id: "CHEMICAL_AGENTS",       label: "Chemical Agents")
+]
+
 struct NewLoadoutView: View {
 
     enum LoadoutType: String, CaseIterable {
@@ -27,6 +61,9 @@ struct NewLoadoutView: View {
     @State private var selectedType: LoadoutType = .normal
     @State private var isSubmitting: Bool = false
     @State private var submitError: String?
+
+    // Warbonds the user DOESN'T own (to be excluded in the loadout).
+    @State private var excludedWarbonds: Set<String> = []
 
     var body: some View {
         ZStack {
@@ -105,6 +142,57 @@ struct NewLoadoutView: View {
                     .clipShape(Capsule())
                 }
 
+                // Warbonds you DON'T own (to exclude)
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Warbonds you DON'T own")
+                        .foregroundColor(.white)
+                        .font(.system(size: 16, weight: .semibold))
+
+                    Text("We'll avoid gear from these warbonds.")
+                        .foregroundColor(.white.opacity(0.7))
+                        .font(.system(size: 13))
+
+                    ScrollView {
+                        LazyVGrid(
+                            columns: [
+                                GridItem(.flexible()),
+                                GridItem(.flexible())
+                            ],
+                            spacing: 8
+                        ) {
+                            ForEach(allWarbonds) { wb in
+                                let isExcluded = excludedWarbonds.contains(wb.id)
+
+                                Button {
+                                    if isExcluded {
+                                        excludedWarbonds.remove(wb.id)
+                                    } else {
+                                        excludedWarbonds.insert(wb.id)
+                                    }
+                                } label: {
+                                    Text(wb.label)
+                                        .font(.system(size: 13, weight: .semibold))
+                                        .multilineTextAlignment(.center)
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 10)
+                                        .frame(maxWidth: .infinity)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 16)
+                                                .fill(
+                                                    isExcluded
+                                                    ? Color.helldiverYellow
+                                                    : Color.white.opacity(0.12)
+                                                )
+                                        )
+                                        .foregroundColor(isExcluded ? .black : .white)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                    .frame(maxHeight: 220)
+                }
+
                 if let submitError {
                     Text(submitError)
                         .foregroundColor(.red)
@@ -148,10 +236,13 @@ struct NewLoadoutView: View {
         isSubmitting = true
         submitError = nil
 
+        // Convert Set<String> to [String] for JSON.
+        let warbondArray = Array(excludedWarbonds)
+
         await viewModel.generateLoadout(
             players: selectedPlayers,
             style: selectedType.apiStyle,
-            warbonds: []   // you can add a UI to pick warbonds later
+            warbonds: warbondArray
         )
 
         if let error = viewModel.errorMessage {
@@ -166,4 +257,3 @@ struct NewLoadoutView: View {
     NewLoadoutView()
         .environmentObject(LoadoutsViewModel())
 }
-
