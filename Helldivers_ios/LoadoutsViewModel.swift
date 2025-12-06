@@ -23,7 +23,7 @@ final class LoadoutsViewModel: ObservableObject {
         loadFromStorage()
     }
 
-    // MARK: - Persistence
+    // Persistence
 
     private func saveToStorage() {
         do {
@@ -44,10 +44,9 @@ final class LoadoutsViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Networking
+    // Networking
 
     func loadInitial() async {
-        // only auto-generate if we have nothing saved
         if loadouts.isEmpty {
             await generateLoadout(players: 4, style: "default", warbonds: [])
         }
@@ -85,7 +84,7 @@ final class LoadoutsViewModel: ObservableObject {
             let apiResponse = try decoder.decode(APILoadoutResponse.self, from: data)
             let uiLoadout = apiResponse.toSquadLoadout(style: style)
 
-            loadouts.append(uiLoadout)          // didSet will auto-save
+            loadouts.append(uiLoadout)      
 
         } catch {
             errorMessage = "Failed to generate loadout: \(error.localizedDescription)"
@@ -94,7 +93,7 @@ final class LoadoutsViewModel: ObservableObject {
 
     func delete(_ loadout: SquadLoadout) {
         if let index = loadouts.firstIndex(where: { $0.id == loadout.id }) {
-            loadouts.remove(at: index)          // didSet will auto-save
+            loadouts.remove(at: index)   
         }
     }
 }
