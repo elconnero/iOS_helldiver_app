@@ -9,15 +9,12 @@ import SwiftUI
 
 @main
 struct Helldivers_iosApp: App {
-    
-    init() {
-            UITabBar.appearance().unselectedItemTintColor = UIColor(white: 0.70, alpha: 1)
-        }
-    
+    @StateObject private var loadoutsViewModel = LoadoutsViewModel()
+
     var body: some Scene {
         WindowGroup {
-            RootView() 
+            RootView()
+                .environmentObject(loadoutsViewModel)
         }
     }
 }
-

@@ -1,17 +1,50 @@
 import Foundation
-import Combine    // or `import SwiftUI`
+import Combine
+import SwiftUI
 
 @MainActor
 final class LoadoutsViewModel: ObservableObject {
-    @Published var loadouts: [SquadLoadout] = []
+    @Published var loadouts: [SquadLoadout] = [] {
+        didSet {
+            saveToStorage()
+        }
+    }
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
     private let baseURL = URL(string: "https://helldiversbackend-production.up.railway.app")!
+    private var generateURL: URL { baseURL.appendingPathComponent("loadouts") }
 
-    private var generateURL: URL {
-        baseURL.appendingPathComponent("loadouts")
+    // UserDefaults key
+    private let storageKey = "savedSquadLoadouts"
+
+    init() {
+        // load any saved loadouts at startup
+        loadFromStorage()
     }
+
+    // Persistence
+
+    private func saveToStorage() {
+        do {
+            let data = try JSONEncoder().encode(loadouts)
+            UserDefaults.standard.set(data, forKey: storageKey)
+        } catch {
+            print("⚠️ Failed to save loadouts: \(error)")
+        }
+    }
+
+    private func loadFromStorage() {
+        guard let data = UserDefaults.standard.data(forKey: storageKey) else { return }
+        do {
+            let decoded = try JSONDecoder().decode([SquadLoadout].self, from: data)
+            self.loadouts = decoded
+        } catch {
+            print("⚠️ Failed to load loadouts: \(error)")
+        }
+    }
+
+    // Networking
 
     func loadInitial() async {
         if loadouts.isEmpty {
@@ -39,15 +72,6 @@ final class LoadoutsViewModel: ObservableObject {
                 return
             }
 
-            if let jsonString = String(data: data, encoding: .utf8) {
-                print("Status code:", http.statusCode)
-                print("Raw JSON response:", jsonString)
-            } else {
-                print("Status code:", http.statusCode)
-                print("Raw JSON response: <non-UTF8 data>")
-            }
-
-            // 🚫 If it's not 200, don't try to decode as a loadout
             guard http.statusCode == 200 else {
                 let serverMessage = String(data: data, encoding: .utf8) ?? ""
                 errorMessage = "Server error \(http.statusCode): \(serverMessage)"
@@ -60,23 +84,16 @@ final class LoadoutsViewModel: ObservableObject {
             let apiResponse = try decoder.decode(APILoadoutResponse.self, from: data)
             let uiLoadout = apiResponse.toSquadLoadout(style: style)
 
-            loadouts.append(uiLoadout)
+            loadouts.append(uiLoadout)      
 
         } catch {
-            if let decodingError = error as? DecodingError {
-                print("Decoding error:", decodingError)
-            } else {
-                print("Other error:", error)
-            }
             errorMessage = "Failed to generate loadout: \(error.localizedDescription)"
         }
     }
 
-
     func delete(_ loadout: SquadLoadout) {
         if let index = loadouts.firstIndex(where: { $0.id == loadout.id }) {
-            loadouts.remove(at: index)
+            loadouts.remove(at: index)   
         }
     }
 }
-

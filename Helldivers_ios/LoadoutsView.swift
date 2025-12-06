@@ -10,49 +10,38 @@ struct LoadoutsView: View {
 
     var body: some View {
         NavigationStack {
-            ZStack {
+            ZStack(alignment: .top) {
                 Color.black.ignoresSafeArea()
-                content
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 24) {
+
+                        // Title
+                        Text("Loadouts")
+                            .font(.custom("ChakraPetch-Bold", size: 34))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                            .padding(.top, 24)
+
+                        if let error = viewModel.errorMessage {
+                            Text(error)
+                                .foregroundColor(.red)
+                                .font(.system(size: 14))
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 8)
+                        }
+
+                        ForEach(viewModel.loadouts) { loadout in
+                            loadoutCard(loadout)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 120)   // <-- room for bottom bar
+                }
             }
             .navigationBarBackButtonHidden(true)
             .task {
                 await viewModel.loadInitial()
-            }
-        }
-    }
-
-    @ViewBuilder
-    private var content: some View {
-        if viewModel.isLoading && viewModel.loadouts.isEmpty {
-            ProgressView("Loading loadout...")
-                .tint(.white)
-        } else {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-
-                    // Title
-                    Text("Loadouts")
-                        .font(.custom("ChakraPetch-Bold", size: 34))
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.top, 24)
-
-                    if let error = viewModel.errorMessage {
-                        Text(error)
-                            .foregroundColor(.red)
-                            .font(.system(size: 14))
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal, 8)
-                    }
-
-                    ForEach(viewModel.loadouts) { loadout in
-                        loadoutCard(loadout)
-                    }
-
-                    Spacer(minLength: 24)
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 16)
             }
         }
     }
@@ -117,4 +106,3 @@ struct LoadoutsView: View {
         .frame(height: 140)
     }
 }
-
