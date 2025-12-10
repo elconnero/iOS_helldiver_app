@@ -29,13 +29,14 @@ struct PlayerLoadout: Identifiable, Hashable, Codable {
 
 // Squad
 enum LoadoutType: String, Codable {
-    case crowdControl = "Crowd Control"
+    // Show correct types in loadout view
+    case crowdControl = "Normal"
     case recon = "Recon"
     case explosive = "Explosive"
 }
 
 struct SquadLoadout: Identifiable, Hashable, Codable {
-    var id: UUID = UUID()            // var + default value
+    var id: UUID = UUID()
     let name: String
     let playerCount: Int
     let type: LoadoutType

@@ -33,7 +33,6 @@ struct APILoadout: Codable {
     let armorPassive: APIEquipment?
     let booster: APIEquipment
     let stratagems: [APIEquipment]
-
 }
 
 // MARK: - Equipment
@@ -50,17 +49,21 @@ extension APILoadoutResponse {
     func toSquadLoadout(style: String) -> SquadLoadout {
         let uiPlayers = players.map { $0.toPlayerLoadout() }
 
+        // Normalize style
+        let normalized = style.lowercased()
+
         let uiType: LoadoutType
-        switch style {
-        case "spec_ops":
+        switch normalized {
+        case "default", "normal":
+            uiType = .crowdControl          // shown as Normal
+        case "spec_ops", "recon":
             uiType = .recon
         case "explosive":
             uiType = .explosive
         default:
-            uiType = .crowdControl
+            uiType = .crowdControl          // safe fallback
         }
 
-        // You can improve this naming later (e.g. include style)
         let index = Int.random(in: 1...999)
         return SquadLoadout(
             name: "Loadout \(index)",
@@ -94,7 +97,6 @@ extension APIPlayer {
     }
 }
 
-
 extension APIEquipment {
     func toEquipmentItem() -> EquipmentItem {
         EquipmentItem(
@@ -104,4 +106,3 @@ extension APIEquipment {
         )
     }
 }
-
